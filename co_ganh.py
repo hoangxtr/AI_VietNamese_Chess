@@ -104,6 +104,42 @@ def ganh(board, team):
         new_board = process(board, team)
     
     return board
+def ganh1(board, nearest_move):
+    '''
+    check enemy team is "ganh" or not 
+    co the bi loi
+    '''
+    board = np.copy(board)
+    def process(board, pos):
+        board = np.copy(board).reshape(-1)
+        if pos % 2 == 0:
+            if 1 <= pos // 5 <= 3 and 1 <= pos % 5 <= 3:
+                if board[pos] * -2 == board[pos-6] + board[pos+6]:
+                    board[pos-6] = board[pos]
+                    board[pos+6] = board[pos]
+                if board[pos] * -2 == board[pos-4] + board[pos+4]:
+                    board[pos-4] = board[pos]
+                    board[pos+4] = board[pos]
+        if pos-1 >= 0 and pos + 1 <= 24 and (pos-1) % 5 < (pos+1) % 5:
+            if board[pos] * -2 == board[pos-1] + board[pos+1]:
+                board[pos-1] = board[pos]
+                board[pos+1] = board[pos]
+        if pos-5 >= 0 and pos + 5 <= 24 and (pos-5) // 5 < (pos+5) // 5:
+            if board[pos] * -2 == board[pos-5] + board[pos+5]:
+                board[pos-5] = board[pos]
+                board[pos+5] = board[pos]
+        return board.reshape(5,5)
+
+    board = process(board, nearest_move)
+    return board
+
+# def ganh1(board, nearest_move):
+#     board = np.copy(board)
+#     y,x = nearest_move
+#     player = board[y,x]
+#     # Check row:
+#     if 0 < x < 4:
+#         if board 
 
 def eveluate(board):
     if len(np.where(board==AI_TEAM)[0]) == 0:

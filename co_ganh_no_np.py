@@ -122,6 +122,43 @@ def ganh(board, team):
     
     return board
 
+def new_ganh(board, nearst_move):
+    '''
+    check enemy team is "ganh" or not 
+    co the bi loi
+    '''
+    board = copy.deepcopy(board)
+    nearst_move = nearst_move[0] * 5 + nearst_move[1] 
+    def process(board, pos):
+        temp_board = copy.deepcopy(board)
+        board = []
+        for i in range(5):
+            for j in range(5):
+                board.append(temp_board[i][j])
+        if pos % 2 == 0:
+            if 1 <= pos // 5 <= 3 and 1 <= pos % 5 <= 3:
+                if board[pos] * -2 == board[pos-6] + board[pos+6]:
+                    board[pos-6] = board[pos]
+                    board[pos+6] = board[pos]
+                if board[pos] * -2 == board[pos-4] + board[pos+4]:
+                    board[pos-4] = board[pos]
+                    board[pos+4] = board[pos]
+        if pos-1 >= 0 and pos + 1 <= 24 and (pos-1) % 5 < (pos+1) % 5:
+            if board[pos] * -2 == board[pos-1] + board[pos+1]:
+                board[pos-1] = board[pos]
+                board[pos+1] = board[pos]
+        if pos-5 >= 0 and pos + 5 <= 24 and (pos-5) // 5 < (pos+5) // 5:
+            if board[pos] * -2 == board[pos-5] + board[pos+5]:
+                board[pos-5] = board[pos]
+                board[pos+5] = board[pos]
+        for i in range(5):
+            for j in range(5):
+                temp_board[i][j] = board[i*5+j]
+        return temp_board
+
+    board = process(board, nearst_move)
+    return board
+
 
 
 def eveluate(board):
@@ -203,16 +240,16 @@ def postprocess_move(board, fromPos, toPos, team):
     neighbors = adjacentDict[toPos[0]*5+toPos[1]]
     # print('neighbors: ', neighbors)
     board = copy.deepcopy(board)
-    board = ganh(board, team)
-    for neighbor in neighbors:
-        if board[ neighbor[0] ][ neighbor[1] ] == team*-1:
-            temp_board = copy.deepcopy(board)
-            traverse_CHET(neighbor, team, team*-1, board)
-            # if collections.Counter(temp_board) != collections.Counter(board):
-            if not cmp_board(temp_board, board):
-                with open('ret.txt', 'a') as f:
-                    print('vay: ', neighbor)
-                    # f.write('temp_board: \n{0}\n'.format(temp_board))
+    board = new_ganh(board, toPos)
+    # for neighbor in neighbors:
+    #     if board[ neighbor[0] ][ neighbor[1] ] == team*-1:
+    #         temp_board = copy.deepcopy(board)
+    #         traverse_CHET(neighbor, team, team*-1, board)
+    #         # if collections.Counter(temp_board) != collections.Counter(board):
+    #         if not cmp_board(temp_board, board):
+    #             with open('ret.txt', 'a') as f:
+    #                 print('vay: ', neighbor)
+    #                 # f.write('temp_board: \n{0}\n'.format(temp_board))
                     # f.write('board: {0}\n'.format(board))
     
     return board
@@ -250,7 +287,6 @@ def get_next_move(board):
 def process(board):
     global AI_BOARD
     if AI_BOARD == None:
-        AI_BOARD = board
         nextMove = get_next_move(board)
         AI_BOARD = move(AI_BOARD, nextMove[0], nextMove[1])
         return nextMove
@@ -274,6 +310,7 @@ def process(board):
         nextMove = get_next_move(board)
         if nextMove != None:
             AI_BOARD = move(board, nextMove[0], nextMove[1])
+            AI_BOARD = postprocess_move(AI_BOARD, nextMove[0], nextMove[1], AI_TEAM)
         return nextMove
     
     neighbors_can_move = [] # Luu cac neighbor co the di chuyen khi dinh bay
@@ -284,18 +321,21 @@ def process(board):
             continue
         temp_board = copy.deepcopy(board)
         temp_board = move(temp_board, neighbor, fromPos)
-        if not cmp_board(ganh(temp_board, AI_TEAM), temp_board): # co the ganh duoc
+        if not cmp_board(new_ganh(temp_board, fromPos), temp_board): # co the ganh duoc
             neighbors_can_move.append(neighbor)
     
     if len(neighbors_can_move) == 0:
+        print('Co bay')
         nextMove = get_next_move(board)
         if nextMove != None:
             AI_BOARD = move(board, nextMove[0], nextMove[1])
+            AI_BOARD = postprocess_move(AI_BOARD, nextMove[0], nextMove[1], AI_TEAM)
         return nextMove
     
     else:
         nextMove = (neighbors_can_move[0],fromPos)
         AI_BOARD = move(board, nextMove[0], nextMove[1])
+        AI_BOARD = postprocess_move(AI_BOARD, nextMove[0], nextMove[1], AI_TEAM)
         return nextMove
 
 
@@ -322,20 +362,66 @@ def playgame(board):
 
         # next_move = get_next_move(board)
         next_move = process(board)
+        print('nextMove: ', next_move)
         board = move(board, next_move[0], next_move[1])
         board = postprocess_move(board, next_move[0], next_move[1], AI_TEAM)
 
         show_board(board)
 
 
-board =[
-        [   1,  1,  1,  1,  1],
-        [   1,  0,  0,  0,  1],
-        [   1,  0,  0,  0,  -1],
-        [   -1, 0,  0,  0,  -1],
-        [   -1, -1, -1, -1, -1]
+# board =[
+#         [   1,  1,  1,  1,  1],
+#         [   1,  0,  0,  0,  1],
+#         [   1,  0,  0,  0,  -1],
+#         [   -1, 0,  0,  0,  -1],
+#         [   -1, -1, -1, -1, -1]
+# ]
+
+# board = [
+#         [   1,  1,  1,  1,  1],
+#         [   1,  0,  0,  0,  1],
+#         [   0,  0,  1,  0,  -1],
+#         [   -1, -1,  -1,  0,  -1],
+#         [   -1, -1, -1, -1, -1]
+# ]
+
+board = [
+        [   0,  0,  -1,  0,  -1],
+        [   1,  1,  0,  0,  -1],
+        [   1,  1,  -1,  0,  0],
+        [   1, 1,  -1,  -1,  -1],
+        [   1, -1, 0, 0, -1]
 ]
+AI_BOARD = board
+show_board(board)
+print('==================================================')
+print('From pos')
+y1 = int(input("y: "))
+x1 = int(input("x: "))
+
+
+print('To pos')
+y2 = int(input("y: "))
+x2 = int(input("x: "))
+
+board = move(board, (y1,x1), (y2,x2))
+board = postprocess_move(board, (y1,x1), (y2,x2), -1 * AI_TEAM)
 
 show_board(board)
-playgame(board)
+print('_____________________________________________')
+
+
+# next_move = get_next_move(board)
+next_move = process(board)
+print('nextMove: ', next_move)
+board = move(board, next_move[0], next_move[1])
+print('__________________________________________________')
+show_board(board)
+print('__________________________________________________')
+board = postprocess_move(board, next_move[0], next_move[1], AI_TEAM)
+
+show_board(board)
+
+# show_board(board)
+# playgame(board)
 
