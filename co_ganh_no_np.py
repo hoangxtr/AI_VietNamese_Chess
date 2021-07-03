@@ -325,7 +325,6 @@ def process(board):
             neighbors_can_move.append(neighbor)
     
     if len(neighbors_can_move) == 0:
-        print('Co bay')
         nextMove = get_next_move(board)
         if nextMove != None:
             AI_BOARD = move(board, nextMove[0], nextMove[1])
@@ -333,6 +332,7 @@ def process(board):
         return nextMove
     
     else:
+        print('Co bay')
         nextMove = (neighbors_can_move[0],fromPos)
         AI_BOARD = move(board, nextMove[0], nextMove[1])
         AI_BOARD = postprocess_move(AI_BOARD, nextMove[0], nextMove[1], AI_TEAM)
