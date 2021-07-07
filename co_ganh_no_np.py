@@ -241,10 +241,10 @@ def postprocess_move(board, fromPos, toPos, team):
     # print('neighbors: ', neighbors)
     board = copy.deepcopy(board)
     board = new_ganh(board, toPos)
-    # for neighbor in neighbors:
-    #     if board[ neighbor[0] ][ neighbor[1] ] == team*-1:
-    #         temp_board = copy.deepcopy(board)
-    #         traverse_CHET(neighbor, team, team*-1, board)
+    for neighbor in neighbors:
+        if board[ neighbor[0] ][ neighbor[1] ] == team*-1:
+            temp_board = copy.deepcopy(board)
+            traverse_CHET(neighbor, team, team*-1, board)
     #         # if collections.Counter(temp_board) != collections.Counter(board):
     #         if not cmp_board(temp_board, board):
     #             with open('ret.txt', 'a') as f:
@@ -377,21 +377,21 @@ def playgame(board):
 #         [   -1, -1, -1, -1, -1]
 # ]
 
-# board = [
-#         [   1,  1,  1,  1,  1],
-#         [   1,  0,  0,  0,  1],
-#         [   0,  0,  1,  0,  -1],
-#         [   -1, -1,  -1,  0,  -1],
-#         [   -1, -1, -1, -1, -1]
-# ]
-
 board = [
-        [   0,  0,  -1,  0,  -1],
-        [   1,  1,  0,  0,  -1],
-        [   1,  1,  -1,  0,  0],
-        [   1, 1,  -1,  -1,  -1],
-        [   1, -1, 0, 0, -1]
+        [   1,  1,  -1,  0,  1],
+        [   1,  0,  0,  -1,  1],
+        [   0,  0,  1,  0,  -1],
+        [   -1, -1,  -1,  0,  -1],
+        [   -1, -1, -1, -1, -1]
 ]
+
+# board = [
+#         [   0,  0,  -1,  0,  -1],
+#         [   1,  1,  0,  0,  -1],
+#         [   1,  1,  -1,  0,  0],
+#         [   1, 1,  -1,  -1,  -1],
+#         [   1, -1, 0, 0, -1]
+# ]
 AI_BOARD = board
 show_board(board)
 print('==================================================')
