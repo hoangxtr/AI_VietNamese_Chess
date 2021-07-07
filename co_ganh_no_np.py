@@ -243,7 +243,7 @@ def postprocess_move(board, fromPos, toPos, team):
     board = new_ganh(board, toPos)
     for neighbor in neighbors:
         if board[ neighbor[0] ][ neighbor[1] ] == team*-1:
-            temp_board = copy.deepcopy(board)
+            # temp_board = copy.deepcopy(board)
             traverse_CHET(neighbor, team, team*-1, board)
     #         # if collections.Counter(temp_board) != collections.Counter(board):
     #         if not cmp_board(temp_board, board):
