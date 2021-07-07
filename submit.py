@@ -81,11 +81,11 @@ def eveluate(board):
             if board[i][j] == AI_TEAM:
                 count += 1
     if count == 0:
-        print('Player won')
+        # print('Player won')
         return -30
 
     if count == 16:
-        print('AI won')
+        # print('AI won')
         return 30
     
     return count
